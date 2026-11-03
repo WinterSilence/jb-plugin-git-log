@@ -1,0 +1,38 @@
+<idea-plugin>
+    <id>afedonyuk.plugins.git.log</id>
+    <name>Git History Search</name>
+    <vendor>Fedonyuk Anton</vendor>
+    <description><![CDATA[Search Git history for a text change.
+<p>Shows commits where the entered text was introduced or removed, with the matching diff lines.</p>
+<ul>
+<li>Added: literal <code>-S</code> search of introduced lines</li>
+<li>Removed: literal <code>-S</code> search of deleted lines</li>
+<li>Opens the commit in the Git log and the file in the editor</li>
+</ul>]]></description>
+    <change-notes><![CDATA[Initial release. Search Git history for added or removed text from the Git tool window.]]></change-notes>
+    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.vcs</depends>
+    <depends>Git4Idea</depends>
+    <dependencies>
+        <module name="intellij.platform.vcs.impl"/>
+        <module name="intellij.platform.vcs.dvcs"/>
+        <module name="intellij.platform.vcs.dvcs.impl"/>
+        <module name="intellij.platform.vcs.log"/>
+        <module name="intellij.platform.vcs.log.impl"/>
+    </dependencies>
+    <extensions defaultExtensionNs="com.intellij">
+        <changesViewContent tabName="Search in files"
+                            className="githistory.search.HistorySearchContentProvider"
+                            predicateClassName="githistory.search.GitRepoVisibility"/>
+    </extensions>
+    <actions>
+        <action id="GitHistorySearch.ShowTab"
+                class="githistory.search.ShowSearchInFilesTabAction"
+                text="Search in files"
+                icon="githistory.search.SearchInFilesIcons.ACTION">
+            <add-to-group group-id="Vcs.Log.ToolWindow.TabActions.DropDown"
+                          anchor="after"
+                          relative-to-action="Vcs.ShowConsoleTab"/>
+        </action>
+    </actions>
+</idea-plugin>
