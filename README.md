@@ -1,6 +1,6 @@
 # Git History Search
 
-A PhpStorm plugin that searches Git history for text entered by the user.
+A plugin for JetBrain IDE's like as PhpStorm that searches Git history for text entered by the user.
 
 The Search in files tab is added to the Git tool window next to Log. The same Git menu that contains Show VCS Console Tab shows the tab while it is closed.
 Modes:
