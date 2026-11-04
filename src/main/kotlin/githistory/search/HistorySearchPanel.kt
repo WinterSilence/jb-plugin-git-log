@@ -5,13 +5,13 @@ import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.JBColor
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.components.JBTextField
 import com.intellij.ui.components.labels.LinkLabel
-import com.intellij.ui.components.labels.LinkListener
 import com.intellij.ui.components.panels.VerticalLayout
 import com.intellij.util.ui.JBUI
 import git4idea.repo.GitRepositoryManager
@@ -185,9 +185,10 @@ class HistorySearchPanel(private val project: Project) : JPanel(BorderLayout()) 
         row.isOpaque = false
         row.border = JBUI.Borders.emptyLeft(8)
         val ioFile = File(root.path, file.path)
-        if (ioFile.isFile) {
+        val virtualFile = LocalFileSystem.getInstance().findFileByPath(ioFile.path)
+        if (virtualFile?.isValid == true) {
             row.add(link(file.path) {
-                CommitNavigator.openFile(project, ioFile)
+                CommitNavigator.openFile(project, virtualFile)
             })
         } else {
             row.add(JBLabel(file.path))
@@ -201,11 +202,11 @@ class HistorySearchPanel(private val project: Project) : JPanel(BorderLayout()) 
         panel.border = JBUI.Borders.emptyLeft(16)
         panel.isOpaque = false
         val font = Font(Font.MONOSPACED, Font.PLAIN, JBUI.scale(12))
-        for (line in lines) {
-            val label = JLabel(line.text.ifEmpty { " " })
+        for ((text, matches) in lines) {
+            val label = JLabel(text.ifEmpty { " " })
             label.font = font
             label.alignmentX = LEFT_ALIGNMENT
-            if (line.matches) {
+            if (matches) {
                 label.isOpaque = true
                 label.background = MATCH_BACKGROUND
             }
@@ -215,7 +216,7 @@ class HistorySearchPanel(private val project: Project) : JPanel(BorderLayout()) 
     }
 
     private fun link(text: String, action: () -> Unit): JComponent {
-        return LinkLabel(text, null, LinkListener { _, _ -> action() }, Unit)
+        return LinkLabel(text, null, { _, _ -> action() }, Unit)
     }
 
     private fun formatDate(iso: String): String {
